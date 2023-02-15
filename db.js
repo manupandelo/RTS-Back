@@ -5,7 +5,8 @@ var con = await mysql.createConnection({
   host: process.env.server,
   user: process.env.user,
   password: process.env.pass,
-  database: process.env.base
+  database: process.env.base,
+  port: process.env.port
 });
 
 con.connect(function(err) {

@@ -13,6 +13,6 @@ app.use("/", router)
 
 
 
-app.listen(process.env.PORT || port, () => {
-  console.log(`Live at ${process.env.PORT || port}`);
+app.listen( port, () => {
+  console.log(`Live at ${port}`);
 })
