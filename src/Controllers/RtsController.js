@@ -1,9 +1,9 @@
 import { Router } from 'express';
 
-import { rtsService } from '../Services/rtsService.js';
+import { RtsService } from '../Services/rtsService.js';
 
 const router = Router();
-const rtsService = new rtsService();
+const rtsService = new RtsService();
 
 router.get('', async (req, res) => {
   return res.status(200).json("Bienvenido al sistema de RTS Commisioning");
