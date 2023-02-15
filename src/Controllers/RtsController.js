@@ -1,6 +1,6 @@
 import { Router } from 'express';
 
-import { RtsService } from '../Services/rtsService.js';
+import { RtsService } from '../Services/RtsService.js';
 
 const router = Router();
 const rtsService = new RtsService();
