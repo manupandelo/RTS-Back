@@ -4,14 +4,14 @@
   "description": "proyecto",
   "main": "index.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1",
+    "install" : "npm install",
     "start": "node index.js"
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/manupandelo/TuProfesor-BackEnd.git"
+    "url": "git+https://github.com/manupandelo/rts-back.git"
   },
-  "author": "tuProfesor",
+  "author": "RTS",
   "license": "ISC",
   "type": "module",
   "dependencies": {
