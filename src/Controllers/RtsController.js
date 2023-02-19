@@ -11,44 +11,39 @@ router.get('', async (req, res) => {
 
 router.get('/sistema', async (req, res) => {
   console.log("Get Sistemas")
-  const sistemacolumns = await rtsService.getSistemas();
-  return res.status(200).json(sistema);
+  const rows = await rtsService.getSistemas();
+  return res.status(200).json(rows);
 });
 
 router.get('/subsistema', async (req, res) => {
   console.log("Get Subsistemas")
-  const subsistema = await rtsService.getSubSistemas();
-  return res.status(200).json(subsistema);
+  const rows = await rtsService.getSubSistemas();
+  return res.status(200).json(rows);
 });
 
 router.get('/tag', async (req, res) => {
   console.log("Get Tags")
-  const tags = await rtsService.getTags();
-  return res.status(200).json(tags);
+  const rows = await rtsService.getTags();
+  return res.status(200).json(rows);
 });
 
-router.get('/tareas', async (req, res) => {
+router.get('/tarea', async (req, res) => {
   console.log("Get Tareas")
-  const tareas = await rtsService.getTareas();
-  return res.status(200).json(tareas);
+  const rows = await rtsService.getTareas();
+  return res.status(200).json(rows);
 });
 
 router.get('/registro-tareas', async (req, res) => {
   console.log("Get Registro Tareas")
-  const registro = await rtsService.getRegistro();
-  return res.status(200).json(registro);
+  const rows = await rtsService.getRegistro();
+  return res.status(200).json(rows);
 });
 
 router.get('/registro-tareas/:id', async (req, res) => {
   console.log("Get Registro Tareas by its Tag ID")
-  const registro = await rtsService.getRegistroById(req.params.id);
-  return res.status(200).json(registro);
+  const rows = await rtsService.getRegistroById(req.params.id);
+  return res.status(200).json(rows);
 });
 
-router.get('/sistema/:id', async (req, res) => {
-  console.log("Get Entire Sistema by its ID")
-  const sistema = await rtsService.getSistemaById(req.params.id);
-  return res.status(200).json(sistema);
-});
 
 export default router;
