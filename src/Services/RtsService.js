@@ -17,7 +17,7 @@ export class RtsService {
     }
 
     getTags = async () => {
-        let query = `SELECT * FROM tag`
+        let query = `SELECT tag.idtag as id, tag.tag, tag.nombre, tag.idtipo, subsistema.nombre as subsistema, subsistema.numsubsistema, tag.plano, especialidad.nombre as especialidad, tipo.nombre as tipo, tag.observaciones FROM tag INNER JOIN subsistema ON tag.idsubsistema = subsistema.id INNER JOIN especialidad ON tag.idespecialidad = especialidad.idespecialidad INNER JOIN tipo ON tag.idtipo = tipo.idtipo`
         const [result, fields] = await connection.execute(query)
         return result
     }
@@ -29,14 +29,16 @@ export class RtsService {
     }
 
     getRegistros = async () => {
-        let query = `SELECT * FROM registroxtarea`
+        let query = `select tagXtarea.id, tag.tag, tag.nombre as nombretag, tarea.nombre as tarea, tagXtarea.realizado from tagXtarea INNER JOIN tag ON tagXtarea.idtag = tag.idtag INNER JOIN tarea ON tagXtarea.idtarea = tarea.idtarea order by tagXtarea.id asc`
         const [result, fields] = await connection.execute(query)
+
         return result
     }
 
     getRegistroById = async (id) => {
-        let query = `SELECT * FROM registroxtarea WHERE idTag = ?`  
+        let query = `SELECT tagXtarea.id, tag.nombre as nombretag, tag.tag, tarea.nombre as tarea, tagXtarea.realizado FROM tagXtarea inner join tag on tagXtarea.idtag = tag.idtag inner join tarea on tagXtarea.idtarea = tarea.idtarea WHERE idTag = ? order by tagXtarea.id asc`  
         const [result, fields] = await connection.execute(query, [id])
         return result
     }
+
 }

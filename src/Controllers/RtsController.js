@@ -35,7 +35,8 @@ router.get('/tarea', async (req, res) => {
 
 router.get('/registro-tareas', async (req, res) => {
   console.log("Get Registro Tareas")
-  const rows = await rtsService.getRegistro();
+  const rows = await rtsService.getRegistros();
+  console.log(rows.length)
   return res.status(200).json(rows);
 });
 
@@ -44,6 +45,5 @@ router.get('/registro-tareas/:id', async (req, res) => {
   const rows = await rtsService.getRegistroById(req.params.id);
   return res.status(200).json(rows);
 });
-
 
 export default router;
