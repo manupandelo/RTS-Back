@@ -1,4 +1,5 @@
 import { Router } from 'express';
+import con from '../../db.js';
 
 import { RtsService } from '../Services/RtsService.js';
 
@@ -10,6 +11,12 @@ router.get('', async (req, res) => {
 });
 
 // GETS
+
+router.get('/proyecto', async (req, res) => {
+  console.log("Get Proyectos")
+  const rows = await rtsService.getProyectos();
+  return res.status(200).json(rows);
+});
 
 router.get('/sistema', async (req, res) => {
   console.log("Get Sistemas")
@@ -47,6 +54,18 @@ router.get('/registro-tareas/:id', async (req, res) => {
   return res.status(200).json(rows);
 });
 
+router.get('/tipo', async (req, res) => {
+  console.log("Get Tipos")
+  const rows = await rtsService.getTipos();
+  return res.status(200).json(rows);
+});
+
+router.get('/especialidad', async (req, res) => {
+  console.log("Get Especialidades")
+  const rows = await rtsService.getEspecialidades();
+  return res.status(200).json(rows);
+});
+
 // POSTS
 
 router.post('/proyecto', async (req, res) => {
@@ -64,6 +83,7 @@ router.post('/sistema', async (req, res) => {
 router.post('/subsistema', async (req, res) => {
   console.log("Post Subsistema")
   const rows = await rtsService.postSubSistema(req.body);
+  console.log(res.status)
   return res.status(200).json(rows);
 });
 
@@ -76,6 +96,24 @@ router.post('/tag', async (req, res) => {
 router.post('/tarea', async (req, res) => {
   console.log("Post Tarea")
   const rows = await rtsService.postTarea(req.body);
+  return res.status(200).json(rows);
+});
+
+router.post('/tipo', async (req, res) => {
+  console.log("Post Tipo")  
+  const rows = await rtsService.postTipo(req.body.nombre);
+  return res.status(200).json(rows);
+});
+
+router.post('/especialidad', async (req, res) => {
+  console.log("Post Especialidad")
+  const rows = await rtsService.postEspecialidad(req.body.nombre);
+  return res.status(200).json(rows);
+});
+
+router.post('/registro', async (req, res) => {
+  console.log("Post Registro Tareas")
+  const rows = await rtsService.postRegistro(req.body);
   return res.status(200).json(rows);
 });
 

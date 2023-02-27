@@ -7,6 +7,12 @@ export class RtsService {
 
     // GETS
 
+    getProyectos = async () => {
+        let query = `SELECT * FROM proyecto`
+        const [result, fields] = await connection.execute(query)
+        return result
+    }
+
     getSistemas = async () => {
         let query = `SELECT sistema.id, sistema.nombre, sistema.idsistema, proyecto.nombre as proyecto FROM sistema INNER JOIN proyecto ON sistema.idproyecto = proyecto.idproyecto`
         const [result, fields] = await connection.execute(query)
@@ -41,13 +47,25 @@ export class RtsService {
     }
 
     getTareas = async () => {
-        let query = `SELECT tarea.idtarea as id, tarea.nombre, tipo.nombre as tipo, tarea.codigo, especialidad.nombre as especialidad, tarea.ubicacion FROM tarea INNER JOIN tipo ON tarea.idtipo = tipo.idtipo INNER JOIN especialidad ON tarea.idespecialidad = especialidad.idespecialidad`
+        let query = `SELECT tarea.idtarea as id, tarea.nombre, tipo.nombre as tipo, tarea.idtipo, tarea.codigo, especialidad.nombre as especialidad, tarea.ubicacion FROM tarea INNER JOIN tipo ON tarea.idtipo = tipo.idtipo INNER JOIN especialidad ON tarea.idespecialidad = especialidad.idespecialidad`
         const [result, fields] = await connection.execute(query)
         return result
     }
 
     getRegistros = async () => {
         let query = `select tagXtarea.id, tag.tag, tag.nombre as nombretag, tarea.nombre as tarea, tagXtarea.realizado from tagXtarea INNER JOIN tag ON tagXtarea.idtag = tag.idtag INNER JOIN tarea ON tagXtarea.idtarea = tarea.idtarea order by tagXtarea.id asc`
+        const [result, fields] = await connection.execute(query)
+        return result
+    }
+
+    getEspecialidades = async () => {
+        let query = `SELECT * FROM especialidad`
+        const [result, fields] = await connection.execute(query)
+        return result
+    }
+
+    getTipos = async () => {
+        let query = `SELECT * FROM tipo`
         const [result, fields] = await connection.execute(query)
         return result
     }
@@ -68,8 +86,16 @@ export class RtsService {
     }
 
     postSubSistema = async (subSistema) => {
+        let fechainicio = "";
+        let fechafinal = "";
+        
+        for(let i = 0; i < 10; i++) {
+            fechainicio += subSistema.fechainicio[i]
+            fechafinal += subSistema.fechafinal[i]
+        }
+
         let query = `INSERT INTO subsistema (numsubsistema, fechainicio, fechafinal, nombre, idsistema) VALUES (?, ?, ?, ?, ?)`
-        const [result, fields] = await connection.execute(query, [subSistema.numsubsistema, subSistema.fechainicio, subSistema.fechafinal, subSistema.nombre, subSistema.idsistema])
+        const [result, fields] = await connection.execute(query, [subSistema.numsubsistema, fechainicio, fechafinal, subSistema.nombre, subSistema.idsistema])
         return result
     }
 
@@ -82,6 +108,25 @@ export class RtsService {
     postTarea = async (tarea) => {
         let query = `INSERT INTO tarea (nombre, idtipo, codigo, idespecialidad, ubicacion) VALUES (?, ?, ?, ?, ?)`
         const [result, fields] = await connection.execute(query, [tarea.nombre, tarea.idtipo, tarea.codigo, tarea.idespecialidad, tarea.ubicacion])
+        return result
+    }
+
+    postTipo = async (nombre) => {
+        let query = `INSERT INTO tipo (nombre) VALUES (?)`
+        const [result, fields] = await connection.execute(query, [nombre])
+        return result
+    }
+
+    postEspecialidad = async (nombre) => {
+        let query = `INSERT INTO especialidad (nombre) VALUES (?)`
+        const [result, fields] = await connection.execute(query, [nombre])
+        return result
+    }
+
+    postRegistro = async (registro) => {
+        console.log(registro)
+        let query = `INSERT INTO tagXtarea (idtag, idtarea, realizado) VALUES (?, ?, ?)`
+        const [result, fields] = await connection.execute(query, [registro.idtag, registro.idtarea, 0])
         return result
     }
 
