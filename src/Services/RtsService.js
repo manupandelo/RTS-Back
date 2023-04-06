@@ -1,5 +1,8 @@
 import 'dotenv/config'
 import con from '../../db.js'
+import jwt from "jsonwebtoken";
+import bcrypt from "bcryptjs";
+
 
 const connection = con
 
@@ -52,12 +55,6 @@ export class RtsService {
         return result
     }
 
-    getRegistros = async () => {
-        let query = `select tagXtarea.id, tag.tag, tag.nombre as nombretag, tarea.nombre as tarea, tagXtarea.realizado from tagXtarea INNER JOIN tag ON tagXtarea.idtag = tag.idtag INNER JOIN tarea ON tagXtarea.idtarea = tarea.idtarea order by tagXtarea.id asc`
-        const [result, fields] = await connection.execute(query)
-        return result
-    }
-
     getEspecialidades = async () => {
         let query = `SELECT * FROM especialidad`
         const [result, fields] = await connection.execute(query)
@@ -70,6 +67,11 @@ export class RtsService {
         return result
     }
 
+    getPermisos = async (id) => {
+        let query = `SELECT * FROM permisos WHERE iduser = ?`
+        const [result, fields] = await connection.execute(query, [id])
+        return result
+    }
 
     // POSTS
 
@@ -130,13 +132,61 @@ export class RtsService {
         return result
     }
 
-    // PUTS
+    login = async (usuario) => {
+        let query=`Select * from user where user=?`;
+        const [result,fields] = await connection.execute(query,[usuario.user]);
+        if(result[0]==undefined){
+            return false
+        }
+        if(bcrypt.compareSync(usuario.password, result[0].password)){
+            result[0].token= await this.getToken(result[0]);
+            console.log(result)
+            if(result[0].tipousuario == 1){
+                result[0].admin = true
+            }else{
+                result[0].admin = false
+                result[0].permisos = await this.getPermisos(result[0].id)
+                
+            }
+            return result[0];
+        }else{
+            return false;
+        }
+    }
 
-    putRegistro = async (id, registro) => {
-        let query = `UPDATE tagXtarea SET realizado = ? WHERE id = ?`
-        const [result, fields] = await connection.execute(query, [registro.realizado, id])
+    createUsuario = async (usuario) => {
+        let query = `INSERT INTO user (user, password, nombreapellido, tipousuario) VALUES (?, ?, ?, ?)`
+        const [result, fields] = await connection.execute(query, [usuario.user, bcrypt.hashSync(usuario.password, 10), usuario.nombreapellido, usuario.tipousuario])
         return result
     }
 
+    getToken = async (user) => {
+        const userId = `${user.id}`;
+        const username = `${user.user}`;
+        const token = jwt.sign(
+            {
+            payload: "login",
+            nombreusuario: username,
+            },
+            process.env.AUTH_HS256_KEY, 
+            {
+            issuer: "http://rts.com/",
+            subject: userId,
+            audience: ["http://localhost/"],
+            expiresIn: 60 * 24 * 24,
+        });
+        return token;
+    } 
+    // PUTS
+
+    putRegistro = async (id) => {
+        let query = `UPDATE tagXtarea SET realizado = 1, fecha= WHERE id = ?`
+        const [result, fields] = await connection.execute(query, [id])
+        return result
+    }
 
 }
+
+
+import "dotenv/config";
+  
