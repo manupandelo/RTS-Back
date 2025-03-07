@@ -3,6 +3,21 @@ import con from '../../db.js'
 import jwt from "jsonwebtoken";
 import bcrypt from "bcryptjs";
 
+//Usuario --> id, user, password, idEmpresa y proximamente rol/permisos
+
+// Proyecto --> id, nombre
+// Sistema --> id, nombre, numSistema idproyecto
+// Subsistema --> id, numsubsistema, fechainicio, fechafinal, nombre, idsistema
+// Tag --> id, tag, nombre, idsubsistema, plano, idTipo
+// Tarea --> id, nombre, idcodigo, idTag, done
+
+//TareaXTipo --> id, idTarea, idTipo, codigo
+
+// Especialidad --> id, nombre
+// Tipo --> id, nombre, idEspecialidad
+
+
+
 
 const connection = con
 
@@ -11,62 +26,73 @@ export class RtsService {
     // GETS
 
     getProyectos = async () => {
-        let query = `SELECT * FROM proyecto`
+        let query = `SELECT * FROM Proyecto`
         const [result, fields] = await connection.execute(query)
         return result
     }
 
     getSistemas = async () => {
-        let query = `SELECT sistema.id, sistema.nombre, sistema.idsistema, proyecto.nombre as proyecto FROM sistema INNER JOIN proyecto ON sistema.idproyecto = proyecto.idproyecto`
+        let query = `SELECT Sistema.id, Sistema.nombre, Sistema.numSistema, Proyecto.nombre as proyecto FROM Sistema INNER JOIN Proyecto ON Sistema.idProyecto = Proyecto.id`
         const [result, fields] = await connection.execute(query)
         return result
     }
 
     getSubSistemas = async () => {
-        let query = `SELECT subsistema.id, subsistema.numsubsistema, subsistema.fechainicio, subsistema.fechafinal, subsistema.nombre, sistema.idsistema as numsistema, sistema.nombre as nombresistema FROM subsistema INNER JOIN sistema ON subsistema.idsistema = sistema.id`
+        let query = `SELECT SubSistema.id, SubSistema.nombre, SubSistema.numSubSistema, SubSistema.fechainicio, subsistema.fechafinal, Xistema.numSistema as numSistema, Sistema.nombre as nombreSistema FROM SubSistema INNER JOIN Sistema ON SubSistema.idSistema = Sistema.id`
         const [result, fields] = await connection.execute(query)
         return result
     }
 
     getTags = async () => {
-        let query = `SELECT tag.idtag as id, tag.tag, tag.nombre, tag.idtipo, subsistema.nombre as subsistema, subsistema.numsubsistema, tag.plano, especialidad.nombre as especialidad, tipo.nombre as tipo, tag.observaciones FROM tag INNER JOIN subsistema ON tag.idsubsistema = subsistema.id INNER JOIN especialidad ON tag.idespecialidad = especialidad.idespecialidad INNER JOIN tipo ON tag.idtipo = tipo.idtipo`
-        let query2 = `SELECT tagXtarea.id, tagXtarea.idtag, tag.tag, tag.nombre as nombretag, tarea.nombre as tarea, tagXtarea.realizado from tagXtarea INNER JOIN tag ON tagXtarea.idtag = tag.idtag INNER JOIN tarea ON tagXtarea.idtarea = tarea.idtarea order by tagXtarea.id asc`
-        const [Tags, fields] = await connection.execute(query)
-        const [registro, fields2] = await connection.execute(query2) 
-        for(let i = 0; i < Tags.length; i++) {
-            Tags[i].tareas = []
-            let suma = 0
-            for(let j = 0; j < registro.length; j++) {
-                if(Tags[i].id == registro[j].idtag) {
-                    Tags[i].tareas.push(registro[j])
-                }
-            }
-            for(let k = 0; k < Tags[i].tareas.length; k++) {
-                suma += Tags[i].tareas[k].realizado
-            }
-            Tags[i].filledQuantity = suma / Tags[i].tareas.length * 100
-        }
-        return Tags
+        let query = `SELECT Tag.id, Tag.tag, Tag.nombre, SubSistema.nombre as nombreSubSistema, Tag.plano, Tipo.nombre as tipo FROM tag INNER JOIN SubSistema ON Tag.idSubSistema = SubSistema.id INNER JOIN Tipo ON Tag.idTipo = Tipo.id`
+        const [result, fields] = await connection.execute(query)
+        return result
     }
 
     getTareas = async () => {
-        let query = `SELECT tarea.idtarea as id, tarea.nombre, tipo.nombre as tipo, tarea.idtipo, tarea.codigo, especialidad.nombre as especialidad, tarea.ubicacion FROM tarea INNER JOIN tipo ON tarea.idtipo = tipo.idtipo INNER JOIN especialidad ON tarea.idespecialidad = especialidad.idespecialidad`
+        let query = `SELECT Tarea.id, Tarea.nombre, TareaXTipo.codigo, Tarea.ubicacion, Tarea.done FROM tarea INNER JOIN TareaXTipo ON Tarea.idCodigo = TareaXTipo.id`
+        const [result, fields] = await connection.execute(query)
+        return result
+    }
+
+    getTareasByTag = async (idTag) => {
+        let query = `SELECT Tarea.id, Tarea.nombre, TareaXTipo.codigo , Tarea.ubicacion, Tarea.done FROM tarea INNER JOIN TareaXTipo ON Tarea.idCodigo = TareaXTipo.id WHERE Tarea.idTag = ?`
+        const [result, fields] = await connection.execute(query, [idTag])
+        return result
+    }
+
+    getTagsBySubsistema = async (idSubsistema) => {
+        let query = `SELECT Tag.id, Tag.tag, Tag.nombre, SubSistema.nombre as nombreSubSistema, Tag.plano, Especialidad.nombre as especialidad FROM tag INNER JOIN SubSistema ON Tag.idSubSistema = SubSistema.id INNER JOIN Especialidad ON Tag.idEspecialidad = Especialidad.id WHERE tag.idsubsistema = ?`
+        const [result, fields] = await connection.execute(query, [idSubsistema])
+        return result
+    }
+
+    getSubSistemasBySistema = async (idSistema) => {
+        let query = `SELECT SubSistema.id, SubSistema.nombre, SubSistema.numSubSistema, SubSistema.fechainicio, subsistema.fechafinal, Xistema.numSistema as numSistema, Sistema.nombre as nombreSistema FROM SubSistema INNER JOIN Sistema ON SubSistema.idSistema = Sistema.id WHERE sistema.id = ?`
+        const [result, fields] = await connection.execute(query, [idSistema])
+        return result
+    }
+
+    getSistemasByProyecto = async (idProyecto) => {
+        let query = `SELECT sistema.id, sistema.nombre, sistema.idsistema, proyecto.nombre as proyecto FROM sistema INNER JOIN proyecto ON sistema.idproyecto = proyecto.idproyecto WHERE proyecto.idproyecto = ?`
+        const [result, fields] = await connection.execute(query, [idProyecto])
+        return result
+    }
+
+
+    getTipos = async () => {
+        let query = `SELECT Tipo.id, Tipo.nombre, Especialidad.nombre as especialidad FROM Tipo INNER JOIN Tipo ON Tipo.idEspecialidad = Especialidad.id`
         const [result, fields] = await connection.execute(query)
         return result
     }
 
     getEspecialidades = async () => {
-        let query = `SELECT * FROM especialidad`
+        let query = `SELECT * FROM Especialidad`
         const [result, fields] = await connection.execute(query)
         return result
     }
 
-    getTipos = async () => {
-        let query = `SELECT * FROM tipo`
-        const [result, fields] = await connection.execute(query)
-        return result
-    }
-
+    //Para despues
     getPermisos = async (id) => {
         let query = `SELECT * FROM permisos WHERE iduser = ?`
         const [result, fields] = await connection.execute(query, [id])
@@ -75,62 +101,120 @@ export class RtsService {
 
     // POSTS
 
+    //Falta agregar que no se pueda agregar un proy, sist, subsist, tag con mismo nombre
+    
     postProyecto = async (nombre) => {
-        let query = `INSERT INTO proyecto (nombre) VALUES (?)`
+        let query = `INSERT INTO Proyecto (nombre) VALUES (?)`
         const [result, fields] = await connection.execute(query, [nombre])
         return result
     }
 
+
     postSistema = async (sistema) => {
-        let query = `INSERT INTO sistema (nombre, idsistema, idproyecto) VALUES (?, ?, ?)`
-        const [result, fields] = await connection.execute(query, [sistema.nombre, sistema.idsistema, sistema.idproyecto])
-        return result
+        //Busco si existe el proyecto
+        let proyectoIdQuery = `SELECT id FROM Proyecto WHERE nombre = ?`
+        const [resultProyecto, fields] = await connection.execute(proyectoIdQuery, [sistema.nombreProyecto])
+
+        if(resultProyecto[0] == undefined) {
+            return 0
+        } else {
+            let query = `INSERT INTO Sistema (nombre, idSistema, idProyecto) VALUES (?, ?, ?)`
+            const [result, fields] = await connection.execute(query, [sistema.nombre, sistema.idSistema, resultProyecto[0].id])
+            return result
+        }
     }
 
     postSubSistema = async (subSistema) => {
-        let fechainicio = "";
-        let fechafinal = "";
-        
-        for(let i = 0; i < 10; i++) {
-            fechainicio += subSistema.fechainicio[i]
-            fechafinal += subSistema.fechafinal[i]
-        }
+        let SistemaIdQuery = `SELECT id FROM sistema WHERE nombre = ?`
+        const [resultSistema, fields] = await connection.execute(SistemaIdQuery, [subSistema.sistema])
 
-        let query = `INSERT INTO subsistema (numsubsistema, fechainicio, fechafinal, nombre, idsistema) VALUES (?, ?, ?, ?, ?)`
-        const [result, fields] = await connection.execute(query, [subSistema.numsubsistema, fechainicio, fechafinal, subSistema.nombre, subSistema.idsistema])
-        return result
+        if(resultSistema[0] == undefined) {
+            return 0
+        } else {
+            let query = `INSERT INTO subsistema (numsubsistema, fechainicio, fechafinal, nombre, idsistema) VALUES (?, ?, ?, ?, ?)`
+            const [result, fields] = await connection.execute(query, [subSistema.numsubsistema, subSistema.fechainicio, subSistema.fechafinal, subSistema.nombre, resultSistema[0].id])
+            return result
+        }
     }
 
     postTag = async (tag) => {
-        let query = `INSERT INTO tag (tag, nombre, idtipo, idsubsistema, plano, idespecialidad, observaciones) VALUES (?, ?, ?, ?, ?, ?, ?)`
-        const [result, fields] = await connection.execute(query, [tag.tag, tag.nombre, tag.idtipo, tag.idsubsistema, tag.plano, tag.idespecialidad, tag.observaciones])
-        return result
+        let SubSistemaIdQuery = `SELECT id FROM SubSistema WHERE nombre = ?`
+        const [resultSubSistema, fieldsSubSistema] = await connection.execute(SubSistemaIdQuery, [tag.subSistema])
+
+        let tipoIdQuery = `SELECT id FROM Tipo WHERE nombre = ?`
+        const [resultTipo, fieldsTipo] = await connection.execute(tipoIdQuery, [tag.Tipo])
+
+        if(resultSubSistema[0] == undefined) {
+            return 0
+        } else if(resultTipo[0] == undefined) {
+            return 1
+        } else {
+            let query = `INSERT INTO Tag (tag, nombre, idSubSistema, plano, idTipo) VALUES (?, ?, ?, ?, ?)`
+            const [result, fields] = await connection.execute(query, [tag.tag, tag.nombre, resultSubSistema[0].id, tag.plano, resultTipo[0].id])
+            if(result.affectedRows == 0) {
+                return 2
+            } else {
+                return postTareasByEspecialidad(resultTipo[0].id, result[0].insertId)
+            }
+            
+        }
     }
 
+    postTareasByTipo = async (idTipo, idTag) => {
+        let query = `SELECT * FROM TareaXTipo WHERE idTipo = ?`
+        const [result, fields] = await connection.execute(query, [idTipo])
+
+        if(result[0] == undefined) {
+            return 3
+        } else {
+            let query2 = `INSERT INTO Tarea (nombre, idCodigo, idTag, done) VALUES (${result[0].nombre}, ${result[0].idCodigo}, ${idTag}, 0)`
+    
+            for(let i = 1; i < result.length; i++) {
+                query2 += `, (${result[i].nombreTarea}, ${result[i].id}, ${idTag}, 0)`
+            }
+            const [result2, fields2] = await connection.execute(query2)
+            return result2
+        }
+    }
+
+
+    /*Revisar esto
     postTarea = async (tarea) => {
-        let query = `INSERT INTO tarea (nombre, idtipo, codigo, idespecialidad, ubicacion) VALUES (?, ?, ?, ?, ?)`
-        const [result, fields] = await connection.execute(query, [tarea.nombre, tarea.idtipo, tarea.codigo, tarea.idespecialidad, tarea.ubicacion])
-        return result
-    }
+        let TagIdQuery = `SELECT * FROM tag WHERE nombre = ?`
+        const [resultTag, fields] = await connection.execute(TagIdQuery, [tarea.nombreTag])
 
-    postTipo = async (nombre) => {
-        let query = `INSERT INTO tipo (nombre) VALUES (?)`
-        const [result, fields] = await connection.execute(query, [nombre])
-        return result
+        let especialidadIdQuery = `SELECT id FROM especialidad WHERE nombre = ?`
+        const [resultEspecialidad, fieldsEspecialidad] = await connection.execute(especialidadIdQuery, [tag.especialidad])
+
+        let tipoIdQuery = `SELECT idtipo FROM tipo WHERE nombre = ?`
+        const [resultTipo, fieldsTipo] = await connection.execute(tipoIdQuery, [tag.tipo])
+
+        if(resultTipo[0] == undefined) {
+            return 0
+        } else if(resultEspecialidad[0] == undefined) {
+            return 1
+        } else if(resultTag[0] == undefined) {
+            return 2
+        } else {
+            let query = `INSERT INTO tarea (nombre, idtipo, codigo, idespecialidad, ubicacion, idtag, done) VALUES (?, ?, ?, ?, ?, ?, 0)` // 0 = false
+            const [result, fields] = await connection.execute(query, [tarea.nombre, tarea.idtipo, tarea.codigo, tarea.idespecialidad, tarea.ubicacion, resultTag[0].idtag])
+            return result
+        }
     }
+    */
 
     postEspecialidad = async (nombre) => {
-        let query = `INSERT INTO especialidad (nombre) VALUES (?)`
+        let query = `INSERT INTO Especialidad (nombre) VALUES (?)`
         const [result, fields] = await connection.execute(query, [nombre])
         return result
     }
 
-    postRegistro = async (registro) => {
-        console.log(registro)
-        let query = `INSERT INTO tagXtarea (idtag, idtarea, realizado) VALUES (?, ?, ?)`
-        const [result, fields] = await connection.execute(query, [registro.idtag, registro.idtarea, 0])
+    postTipo = async (tipo) => {
+        let query = `INSERT INTO Tipo (nombre, idEspecialidad) VALUES (?,)`
+        const [result, fields] = await connection.execute(query, [tipo.nombre, tipo.idEspecialidad])
         return result
     }
+
 
     login = async (usuario) => {
         let query=`Select * from user where user=?`;
@@ -141,13 +225,13 @@ export class RtsService {
         if(bcrypt.compareSync(usuario.password, result[0].password)){
             result[0].token= await this.getToken(result[0]);
             console.log(result)
-            if(result[0].tipousuario == 1){
+            /*if(result[0].tipousuario == 1){
                 result[0].admin = true
             }else{
                 result[0].admin = false
                 result[0].permisos = await this.getPermisos(result[0].id)
                 
-            }
+            }*/
             return result[0];
         }else{
             return false;
@@ -155,8 +239,8 @@ export class RtsService {
     }
 
     createUsuario = async (usuario) => {
-        let query = `INSERT INTO user (user, password, nombreapellido, tipousuario) VALUES (?, ?, ?, ?)`
-        const [result, fields] = await connection.execute(query, [usuario.user, bcrypt.hashSync(usuario.password, 10), usuario.nombreapellido, usuario.tipousuario])
+        let query = `INSERT INTO user (user, password, nombreapellido) VALUES (?, ?, ?)`
+        const [result, fields] = await connection.execute(query, [usuario.user, bcrypt.hashSync(usuario.password, 10), usuario.nombreapellido])
         return result
     }
 
@@ -177,14 +261,19 @@ export class RtsService {
         });
         return token;
     } 
+
     // PUTS
-
-    putRegistro = async (id) => {
-        let query = `UPDATE tagXtarea SET realizado = 1, fecha= WHERE id = ?`
-        const [result, fields] = await connection.execute(query, [id])
-        return result
+    realizarTarea = async (idTarea) => {
+        let query = `UPDATE tarea SET done = 1 WHERE id = ?`
+        const [result, fields] = await connection.execute(query, [idTarea])
+        if(result.affectedRows == 0) {
+            return false
+        } else {
+            return true
+        }
     }
-
+    
+    // DELETE HACER BIEN, NO SE PUEDE BORRAR SI TIENE DEPENDENCIAS
 }
 
 

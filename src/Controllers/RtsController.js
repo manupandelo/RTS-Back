@@ -64,12 +64,19 @@ router.post('/proyecto', Authenticate, async (req, res) => {
 router.post('/sistema', Authenticate, async (req, res) => {
   console.log("Post Sistema")
   const rows = await rtsService.postSistema(req.body);
+  if(rows == 0) {
+    return res.status(400).json("Error al crear sistema (no existe el proyecto)");
+  }
   return res.status(200).json(rows);
 });
 
 router.post('/subsistema', Authenticate, async (req, res) => {
   console.log("Post Subsistema")
   const rows = await rtsService.postSubSistema(req.body);
+  if(rows == 0) {
+    return res.status(400).json("Error al crear subsistema (no existe el sistema)");
+  }
+
   console.log(res.status)
   return res.status(200).json(rows);
 });
@@ -77,12 +84,29 @@ router.post('/subsistema', Authenticate, async (req, res) => {
 router.post('/tag', Authenticate, async (req, res) => {
   console.log("Post Tag")
   const rows = await rtsService.postTag(req.body);
+  
+  if(rows == 0) {
+    return res.status(400).json("Error al crear tag (no existe el tipo)");
+  } else if(rows == 1) {
+    return res.status(400).json("Error al crear tag (no existe la especialidad)");
+  } else if(rows == 2) {
+    return res.status(400).json("Error al crear tag (no existe la subsistema)");
+  }
+
   return res.status(200).json(rows);
 });
 
 router.post('/tarea', Authenticate, async (req, res) => {
   console.log("Post Tarea")
   const rows = await rtsService.postTarea(req.body);
+
+  if(rows == 0) {
+    return res.status(400).json("Error al crear tarea (no existe el tipo)");
+  } else if(rows == 1) {
+    return res.status(400).json("Error al crear tarea (no existe la especialidad)");
+  } else if(rows == 2) {
+    return res.status(400).json("Error al crear tarea (no existe el tag)");
+  }
   return res.status(200).json(rows);
 });
 
@@ -118,10 +142,10 @@ router.post('/register', async (req, res) => {
 
 // PUTS
 
-router.put('/registro-tareas/:id', Authenticate, async (req, res) => {
-  console.log("Put Registro Tareas")
-  const rows = await rtsService.putRegistro(req.params.id);
-  return res.status(200).json(rows);
+router.put('/realizarTarea', Authenticate, async (req, res) => {
+  console.log("Realizar Tarea")
+  const rows = await rtsService.realizarTarea(req.body.idTarea);
+  rows == 0 ? res.status(400).json("Error al realizar tarea") : res.status(200).json(rows);
 });
 
 
