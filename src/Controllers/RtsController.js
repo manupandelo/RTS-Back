@@ -152,7 +152,7 @@ router.post('/register', async (req, res) => {
 
 router.put('/realizarTarea', /*Authenticate,*/ async (req, res) => {
   console.log("Realizar Tarea")
-  const rows = await rtsService.realizarTarea(req.body.idTarea);
+  const rows = await rtsService.realizarTarea(req.body.id);
   rows == 0 ? res.status(400).json("Error al realizar tarea") : res.status(200).json(rows);
 });
 
