@@ -120,7 +120,7 @@ export class RtsService {
     }
 
     getTareasXTipo = async () => {
-        let query = `SELECT TareaXTipo.id, TareaXTipo.nombreTarea, TareaXTipo.codigo, Tipo.nombre as tipo FROM TareaXTipo INNER JOIN Tipo ON TareaXTipo.idTipo = Tipo.id BY TareaXTipo.id`
+        let query = `SELECT TareaXTipo.id, TareaXTipo.nombreTarea, TareaXTipo.codigo, Tipo.nombre as tipo FROM TareaXTipo INNER JOIN Tipo ON TareaXTipo.idTipo = Tipo.id`
         const [result, fields] = await connection.execute(query)
         return result
     }
