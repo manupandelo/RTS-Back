@@ -33,7 +33,7 @@ export class RtsService {
     }
 
     getSistemas = async () => {
-        let query = `SELECT Sistema.id, Sistema.nombre, Sistema.numSistema, Proyecto.nombre as proyecto, Especialidad.nombre as Especialidad FROM Sistema INNER JOIN Proyecto ON Sistema.idProyecto = Proyecto.id INNER JOIN Especialidad ON Sistema.idEspecialidad = Especialidad.id`
+        let query = `SELECT Sistema.id, Sistema.nombre, Sistema.numSistema, Proyecto.nombre as proyecto FROM Sistema INNER JOIN Proyecto ON Sistema.idProyecto = Proyecto.id`
         const [result, fields] = await connection.execute(query)
         return result
     }
@@ -114,7 +114,7 @@ export class RtsService {
     }
 
     getEspecialidades = async () => {
-        let query = `SELECT Especialidad.id, Especialidad.nombre, Proyecto.nombre as proyecto FROM Especialidad INNER JOIN Proyecto ON Especialidad.idProyecto = Proyecto.id`
+        let query = `SELECT Especialidad.id, Especialidad.nombre FROM Especialidad`
         const [result, fields] = await connection.execute(query)
         return result
     }
@@ -144,8 +144,8 @@ export class RtsService {
 
 
     postSistema = async (sistema) => {
-        let query = `INSERT INTO Sistema (nombre, numSistema, idProyecto, idEspecialidad) VALUES (?, ?, ?)`
-        const [result, fields] = await connection.execute(query, [sistema.nombre, sistema.numSistema, sistema.idProyecto, sistema.idEspecialidad])
+        let query = `INSERT INTO Sistema (nombre, numSistema, idProyecto) VALUES (?, ?, ?)`
+        const [result, fields] = await connection.execute(query, [sistema.nombre, sistema.numSistema, sistema.idProyecto])
         return result
     }
 
