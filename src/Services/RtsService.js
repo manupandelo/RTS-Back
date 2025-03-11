@@ -6,14 +6,15 @@ import bcrypt from "bcryptjs";
 //Usuario --> id, user, password, idEmpresa y proximamente rol/permisos
 
 // Proyecto --> id, nombre
-// Sistema --> id, nombre, numSistema idproyecto
+
+// Sistema --> id, nombre, numSistema idproyecto, idEspecialidad
 // Subsistema --> id, numsubsistema, fechainicio, fechafinal, nombre, idsistema
 // Tag --> id, tag, nombre, idsubsistema, plano, idTipo
 // Tarea --> id, nombre, idcodigo, idTag, done
 
 //TareaXTipo --> id, idTarea, idTipo, codigo
 
-// Especialidad --> id, nombre
+// Especialidad --> id, nombre, idProyecto
 // Tipo --> id, nombre, idEspecialidad
 
 
@@ -32,7 +33,7 @@ export class RtsService {
     }
 
     getSistemas = async () => {
-        let query = `SELECT Sistema.id, Sistema.nombre, Sistema.numSistema, Proyecto.nombre as proyecto FROM Sistema INNER JOIN Proyecto ON Sistema.idProyecto = Proyecto.id`
+        let query = `SELECT Sistema.id, Sistema.nombre, Sistema.numSistema, Proyecto.nombre as proyecto, Especialidad.nombre as Especialidad FROM Sistema INNER JOIN Proyecto ON Sistema.idProyecto = Proyecto.id INNER JOIN Especialidad ON Sistema.idEspecialidad = Especialidad.id`
         const [result, fields] = await connection.execute(query)
         return result
     }
@@ -113,7 +114,7 @@ export class RtsService {
     }
 
     getEspecialidades = async () => {
-        let query = `SELECT * FROM Especialidad`
+        let query = `SELECT Especialidad.id, Especialidad.nombre, Proyecto.nombre as proyecto FROM Especialidad INNER JOIN Proyecto ON Especialidad.idProyecto = Proyecto.id`
         const [result, fields] = await connection.execute(query)
         return result
     }
@@ -143,8 +144,8 @@ export class RtsService {
 
 
     postSistema = async (sistema) => {
-        let query = `INSERT INTO Sistema (nombre, numSistema, idProyecto) VALUES (?, ?, ?)`
-        const [result, fields] = await connection.execute(query, [sistema.nombre, sistema.numSistema, sistema.idProyecto])
+        let query = `INSERT INTO Sistema (nombre, numSistema, idProyecto, idEspecialidad) VALUES (?, ?, ?)`
+        const [result, fields] = await connection.execute(query, [sistema.nombre, sistema.numSistema, sistema.idProyecto, sistema.idEspecialidad])
         return result
     }
 
