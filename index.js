@@ -3,7 +3,7 @@ import cors from "cors";
 
 import router from './src/Controllers/RtsController.js';
 
-const port=5000;
+const port=process.env.PORT || 5000;
 const app = express();
 
 app.use(express.json());
