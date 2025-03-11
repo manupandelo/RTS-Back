@@ -267,13 +267,9 @@ export class RtsService {
 
     // PUTS
     realizarTarea = async (idTarea) => {
-        let query = `UPDATE tarea SET done = 1 WHERE id = ?`
+        let query = `UPDATE Tarea SET done = 1 WHERE id = ?`
         const [result, fields] = await connection.execute(query, [idTarea])
-        if(result.affectedRows == 0) {
-            return false
-        } else {
-            return true
-        }
+        return result.affectedRows
     }
     
     // DELETE HACER BIEN, NO SE PUEDE BORRAR SI TIENE DEPENDENCIAS
