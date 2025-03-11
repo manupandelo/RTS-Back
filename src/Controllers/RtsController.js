@@ -156,6 +156,11 @@ router.put('/realizarTarea', /*Authenticate,*/ async (req, res) => {
   rows == 0 ? res.status(400).json("Error al realizar tarea") : res.status(200).json(rows);
 });
 
+router.put('/desmarcarTarea', /*Authenticate,*/ async (req, res) => {
+  console.log("Desmarcar Tarea")
+  const rows = await rtsService.desmarcarTarea(req.body.id);
+  rows == 0 ? res.status(400).json("Error al desmarcar tarea") : res.status(200).json(rows);
+});
 
 // PARA PASAR IDS CUANDO AGREGAMOS
 

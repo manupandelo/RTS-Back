@@ -271,6 +271,12 @@ export class RtsService {
         const [result, fields] = await connection.execute(query, [idTarea])
         return result.affectedRows
     }
+
+    desmarcarTarea = async (idTarea) => {
+        let query = `UPDATE Tarea SET done = 0 WHERE id = ?`
+        const [result, fields] = await connection.execute(query, [idTarea])
+        return result.affectedRows
+    }
     
     // DELETE HACER BIEN, NO SE PUEDE BORRAR SI TIENE DEPENDENCIAS
 
