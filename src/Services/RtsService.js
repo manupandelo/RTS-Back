@@ -89,7 +89,7 @@ export class RtsService {
         const stats = {};
 
         tags.forEach((tag) => {
-            const tagTasks = tasks.filter((task) => task.idTag === tag.id);
+            const tagTasks = tasks.filter((task) => task.idTag === tag.id && (task.done === 0 || task.done === 1));
             const completedTasks = tagTasks.filter((task) => task.done === 1);
 
             const filledQuantity = ((completedTasks.length / tagTasks.length) * 100).toFixed(2);
