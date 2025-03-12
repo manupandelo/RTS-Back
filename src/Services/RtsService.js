@@ -111,9 +111,21 @@ export class RtsService {
     }
 
     getTareas = async () => {
-        let query = `SELECT Tarea.id, TareaXTipo.nombreTarea as tarea, TareaXTipo.codigo as codigo, Tipo.nombre as tipo, Tarea.done, Tarea.idTag FROM Tarea INNER JOIN TareaXTipo ON Tarea.idCodigo = TareaXTipo.id INNER JOIN Tipo ON TareaXTipo.idTipo = Tipo.id`
+        let query = `SELECT Tarea.id, TareaXTipo.nombreTarea as tarea, TareaXTipo.codigo as codigo, Tipo.nombre as tipo, Tarea.done, Tarea.idTag, TareaXTipo.com FROM Tarea INNER JOIN TareaXTipo ON Tarea.idCodigo = TareaXTipo.id INNER JOIN Tipo ON TareaXTipo.idTipo = Tipo.id`
         const [result, fields] = await connection.execute(query)
-        return result
+
+        let totalComTasks = result.filter((tarea) => tarea.com === 1 && tarea.done !== 2).length;
+        let completedComTasks = result.filter((tarea) => tarea.com === 1 && tarea.done === 1).length;
+        let filledComQuantity = totalComTasks === 0 ? 0 : ((completedComTasks / totalComTasks) * 100).toFixed(2);
+
+        let totalPreComTasks = result.filter((tarea) => tarea.com === 0 && tarea.done !== 2).length;
+        let completedPreComTasks = result.filter((tarea) => tarea.com === 0 && tarea.done === 1).length;
+        let filledPreComQuantity = totalPreComTasks === 0 ? 0 : ((completedPreComTasks / totalPreComTasks) * 100).toFixed(2);
+
+        return [
+            { nombre: 'com', filledQuantity: filledComQuantity },
+            { nombre: 'preCom', filledQuantity: filledPreComQuantity }
+        ];
     }
 
     getComm = async () => {
@@ -123,8 +135,14 @@ export class RtsService {
     }
 
     getPreComm = async () => {
-        let query = `SELECT Tarea.id, TareaXTipo.nombreTarea as tarea, TareaXTipo.codigo as codigo, Tipo.nombre as tipo, Tarea.done, Tag.nombre, Tag.tag FROM Tarea INNER JOIN TareaXTipo ON Tarea.idCodigo = TareaXTipo.id INNER JOIN Tipo ON TareaXTipo.idTipo = Tipo.id INNER JOIN Tag ON Tarea.idTag = Tag.id WHERE TareaXTipo.com = 0`
+        let query = `SELECT Tarea.id, Tarea.done FROM Tarea INNER JOIN TareaXTipo ON Tarea.idCodigo = TareaXTipo.id INNER JOIN Tipo ON TareaXTipo.idTipo = Tipo.id INNER JOIN Tag ON Tarea.idTag = Tag.id WHERE TareaXTipo.com = 0`
         const [result, fields] = await connection.execute(query)
+
+        let totalTasks = result.filter((tarea) => tarea.done === 0 || tarea.done === 1).length;
+        let completedTasks = result.filter((tarea) => tarea.done === 1).length;
+        let filledQuantity = totalTasks === 0 ? 0 : ((completedTasks / totalTasks) * 100).toFixed(2);
+
+
         return result
     }
 
