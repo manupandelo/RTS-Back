@@ -65,6 +65,17 @@ router.get('/especialidad', /*Authenticate,*/ async (req, res) => {
   return res.status(200).json(rows);
 });
 
+router.get('/comm', /*Authenticate,*/ async (req, res) => {
+  console.log("Get Comm")
+  const rows = await rtsService.getComm();
+  return res.status(200).json(rows);
+});
+
+router.get('/precomm', /*Authenticate,*/ async (req, res) => {
+  console.log("Get Comm")
+  const rows = await rtsService.getPreComm();
+  return res.status(200).json(rows);
+});
 // POSTS
 
 router.post('/proyecto', /*Authenticate,*/ async (req, res) => {

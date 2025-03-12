@@ -116,6 +116,18 @@ export class RtsService {
         return result
     }
 
+    getComm = async () => {
+        let query = `SELECT Tarea.id, TareaXTipo.nombreTarea as tarea, TareaXTipo.codigo as codigo, Tipo.nombre as tipo, Tarea.done, Tag.nombre, Tag.tag FROM Tarea INNER JOIN TareaXTipo ON Tarea.idCodigo = TareaXTipo.id INNER JOIN Tipo ON TareaXTipo.idTipo = Tipo.id INNER JOIN Tag ON Tarea.idTag = Tag.id WHERE TareaXTipo.com = 1`
+        const [result, fields] = await connection.execute(query)
+        return result
+    }
+
+    getPreComm = async () => {
+        let query = `SELECT Tarea.id, TareaXTipo.nombreTarea as tarea, TareaXTipo.codigo as codigo, Tipo.nombre as tipo, Tarea.done, Tag.nombre, Tag.tag FROM Tarea INNER JOIN TareaXTipo ON Tarea.idCodigo = TareaXTipo.id INNER JOIN Tipo ON TareaXTipo.idTipo = Tipo.id INNER JOIN Tag ON Tarea.idTag = Tag.id WHERE TareaXTipo.com = 0`
+        const [result, fields] = await connection.execute(query)
+        return result
+    }
+
     getTareasByTag = async (idTag) => {
         let query = `SELECT Tarea.id, TareaXTipo.nombreTarea, TareaXTipo.codigo, Tipo.nombre as tipo, Tarea.done FROM tarea INNER JOIN TareaXTipo ON Tarea.idCodigo = TareaXTipo.id INNER JOIN Tipo ON TareaXTipo.idTipo = Tipo.id WHERE Tarea.idTag = ?`
         const [result, fields] = await connection.execute(query, [idTag])
@@ -156,6 +168,23 @@ export class RtsService {
     getEspecialidades = async () => {
         let query = `SELECT Especialidad.id, Especialidad.nombre FROM Especialidad`
         const [result, fields] = await connection.execute(query)
+
+        let query2 = `SELECT Tarea.id, Tarea.done, Especialidad.id as idEspecialidad FROM Tarea INNER JOIN TareaXTipo ON Tarea.idCodigo = TareaXTipo.id INNER JOIN Tipo ON TareaXTipo.idTipo = Tipo.id INNER JOIN Especialidad ON Tipo.idEspecialidad = Especialidad.id` 
+        const [result2, fields2] = await connection.execute(query2)
+        
+        let especialidades = result.map((especialidad) => {
+            const tareasEspecialidad = result2.filter((tarea) => tarea.idEspecialidad === especialidad.id);
+            const totalTareas = tareasEspecialidad.length;
+            const tareasCompletadas = tareasEspecialidad.filter((tarea) => tarea.done === 1).length;
+            const filledQuantity = totalTareas === 0 ? 0 : ((tareasCompletadas / totalTareas) * 100).toFixed(2);
+            return {
+            ...especialidad,
+            filledQuantity,
+            };
+        });
+
+        especialidades.sort((a, b) => b.porcentajeCompletado - a.porcentajeCompletado);
+        return especialidades;
         return result
     }
 
