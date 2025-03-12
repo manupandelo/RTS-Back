@@ -4,8 +4,8 @@ import fs from 'fs'
 
 var con = await mysql.createConnection({
   host: '34.31.206.176',
-  user: 'root',
-  //password: process.env.pass,
+  user: 'sebas',
+  password: 'manu',
   database: 'RTS',
   port: 3306,
   ssl: { ca: fs.readFileSync('ssl/server-ca.pem'),
