@@ -56,7 +56,7 @@ export class RtsService {
     }
 
     getSubSistemas = async () => {
-        let query = `SELECT SubSistema.id, SubSistema.nombre, SubSistema.numSubSistema, SubSistema.fechainicio, SubSistema.fechafinal, Sistema.numSistema as numSistema, Sistema.nombre as nombreSistema, SubSistema.idSistema, Especialidad.nombre as especialidad FROM SubSistema INNER JOIN Sistema ON SubSistema.idSistema = Sistema.id INNER JOIN Especialidad ON SubSistema.idEspecialidad = Especialidad.id`
+        let query = `SELECT SubSistema.id, SubSistema.nombre, SubSistema.numSubSistema, SubSistema.fechainicio, SubSistema.fechafinal, Sistema.numSistema as numSistema, Sistema.nombre as nombreSistema, SubSistema.idSistema FROM SubSistema INNER JOIN Sistema ON SubSistema.idSistema = Sistema.id`
         const [result, fields] = await connection.execute(query)
 
         let tags = await this.getTags()
