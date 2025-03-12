@@ -184,8 +184,8 @@ export class RtsService {
     }
 
     postSubSistema = async (subSistema) => {
-        let query = `INSERT INTO SubSistema (numSubSistema, fechainicio, fechafinal, nombre, idsistema, idEspecialidad) VALUES (?, ?, ?, ?, ?, ?)`
-        const [result, fields] = await connection.execute(query, [subSistema.numsubsistema, subSistema.fechainicio, subSistema.fechafinal, subSistema.nombre, subSistema.idSistema, subSistema.idEspecialidad])
+        let query = `INSERT INTO SubSistema (numSubSistema, fechainicio, fechafinal, nombre, idsistema) VALUES (?, ?, ?, ?, ?)`
+        const [result, fields] = await connection.execute(query, [subSistema.numsubsistema, subSistema.fechainicio, subSistema.fechafinal, subSistema.nombre, subSistema.idSistema])
         return result
     }
 
