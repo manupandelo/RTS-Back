@@ -64,15 +64,15 @@ export class RtsService {
         result.forEach((subSistema) => {
             subSistema.tags = tags.filter((tag) => tag.idSubSistema === subSistema.id);
 
-            const filledQuantity = subSistema.tags.reduce((acc, tag) => {
-                return acc + parseFloat(tag.filledQuantity);
+            const totalTasks = subSistema.tags.reduce((acc, tag) => {
+                return acc + tag.tareas.filter((tarea) => tarea.done === 0 || tarea.done === 1).length;
             }, 0);
 
-            if(subSistema.tags.length == 0) {
-                subSistema.filledQuantity = 0
-            } else {
-                subSistema.filledQuantity = (filledQuantity / subSistema.tags.length).toFixed(2);
-            }
+            const completedTasks = subSistema.tags.reduce((acc, tag) => {
+                return acc + tag.tareas.filter((tarea) => tarea.done === 1).length;
+            }, 0);
+
+            subSistema.filledQuantity = totalTasks === 0 ? 0 : ((completedTasks / totalTasks) * 100).toFixed(2);
         }
         );
         return result
