@@ -247,8 +247,8 @@ export class RtsService {
     }
 
     postRegistro = async (registro) => {
-        let query = `INSERT INTO TareaXTipo (nombreTarea, idTipo, codigo) VALUES (?, ?, ?)`
-        const [result, fields] = await connection.execute(query, [registro.nombreTarea, registro.idTipo, registro.codigo])
+        let query = `INSERT INTO TareaXTipo (nombreTarea, idTipo, codigo, com) VALUES (?, ?, ?, ?)`
+        const [result, fields] = await connection.execute(query, [registro.nombreTarea, registro.idTipo, registro.codigo, registro.com])
         return result
     }
 
