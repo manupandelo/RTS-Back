@@ -35,17 +35,51 @@ export class RtsService {
     getSistemas = async () => {
         let query = `SELECT Sistema.id, Sistema.nombre, Sistema.numSistema, Proyecto.nombre as proyecto FROM Sistema INNER JOIN Proyecto ON Sistema.idProyecto = Proyecto.id`
         const [result, fields] = await connection.execute(query)
+
+        let subsistemas = await this.getSubSistemas()
+        
+        result.forEach((sistema) => {
+            sistema.subsistemas = subsistemas.filter((subsistema) => subsistema.idSistema === sistema.id);
+            
+
+            const filledQuantity = sistema.subsistemas.reduce((acc, subsistema) => {
+            return acc + parseFloat(subsistema.filledQuantity);
+            }, 0);
+
+            if(sistema.subsistemas.length == 0) {
+                sistema.filledQuantity = 0
+            } else {
+                sistema.filledQuantity = (filledQuantity / sistema.subsistemas.length).toFixed(2);
+            }
+        });
         return result
     }
 
     getSubSistemas = async () => {
-        let query = `SELECT SubSistema.id, SubSistema.nombre, SubSistema.numSubSistema, SubSistema.fechainicio, SubSistema.fechafinal, Sistema.numSistema as numSistema, Sistema.nombre as nombreSistema FROM SubSistema INNER JOIN Sistema ON SubSistema.idSistema = Sistema.id`
+        let query = `SELECT SubSistema.id, SubSistema.nombre, SubSistema.numSubSistema, SubSistema.fechainicio, SubSistema.fechafinal, Sistema.numSistema as numSistema, Sistema.nombre as nombreSistema, SubSistema.idSistema FROM SubSistema INNER JOIN Sistema ON SubSistema.idSistema = Sistema.id`
         const [result, fields] = await connection.execute(query)
+
+        let tags = await this.getTags()
+
+        result.forEach((subSistema) => {
+            subSistema.tags = tags.filter((tag) => tag.idSubSistema === subSistema.id);
+
+            const filledQuantity = subSistema.tags.reduce((acc, tag) => {
+                return acc + parseFloat(tag.filledQuantity);
+            }, 0);
+
+            if(subSistema.tags.length == 0) {
+                subSistema.filledQuantity = 0
+            } else {
+                subSistema.filledQuantity = (filledQuantity / subSistema.tags.length).toFixed(2);
+            }
+        }
+        );
         return result
     }
 
     getTags = async () => {
-        let queryTags = `SELECT Tag.id, Tag.tag, Tag.nombre, Tag.plano, Tipo.nombre as tipo, SubSistema.nombre as subsistema FROM Tag INNER JOIN SubSistema ON Tag.idSubSistema = SubSistema.id INNER JOIN Tipo ON Tag.idTipo = Tipo.id`
+        let queryTags = `SELECT Tag.id, Tag.tag, Tag.nombre, Tag.plano, Tipo.nombre as tipo, SubSistema.nombre as subsistema, Tag.idSubSistema FROM Tag INNER JOIN SubSistema ON Tag.idSubSistema = SubSistema.id INNER JOIN Tipo ON Tag.idTipo = Tipo.id`
         const [tags, fields] = await connection.execute(queryTags)
 
         let queryTasks = `SELECT Tarea.id, Tarea.idTag, Tarea.done, TareaXTipo.nombreTarea as nombreTarea FROM Tarea INNER JOIN TareaXTipo ON Tarea.idCodigo = TareaXTipo.id`
