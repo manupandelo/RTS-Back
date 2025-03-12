@@ -40,17 +40,21 @@ export class RtsService {
         
         result.forEach((sistema) => {
             sistema.subsistemas = subsistemas.filter((subsistema) => subsistema.idSistema === sistema.id);
-            
 
-            const filledQuantity = sistema.subsistemas.reduce((acc, subsistema) => {
-            return acc + parseFloat(subsistema.filledQuantity);
-            }, 0);
+            let totalValidTasks = 0;
+            let totalCompletedTasks = 0;
 
-            if(sistema.subsistemas.length == 0) {
-                sistema.filledQuantity = 0
-            } else {
-                sistema.filledQuantity = (filledQuantity / sistema.subsistemas.length).toFixed(2);
-            }
+            sistema.subsistemas.forEach((subsistema) => {
+            subsistema.tags.forEach((tag) => {
+                const validTasks = tag.tareas.filter((tarea) => tarea.done === 0 || tarea.done === 1).length;
+                const completedTasks = tag.tareas.filter((tarea) => tarea.done === 1).length;
+
+                totalValidTasks += validTasks;
+                totalCompletedTasks += completedTasks;
+            });
+            });
+
+            sistema.filledQuantity = totalValidTasks === 0 ? 0 : ((totalCompletedTasks / totalValidTasks) * 100).toFixed(2);
         });
         return result
     }
