@@ -162,6 +162,12 @@ router.put('/desmarcarTarea', /*Authenticate,*/ async (req, res) => {
   rows == 0 ? res.status(400).json("Error al desmarcar tarea") : res.status(200).json(rows);
 });
 
+router.put('/noaplica', /*Authenticate,*/ async (req, res) => {
+  console.log("No Aplica")
+  const rows = await rtsService.noAplica(req.body.id);
+  rows == 0 ? res.status(400).json("Error al marcar tarea como no aplica") : res.status(200).json(rows);
+});
+
 // PARA PASAR IDS CUANDO AGREGAMOS
 
 router.get('/idproyectos', /*Authenticate,*/ async (req, res) => {
