@@ -123,8 +123,8 @@ export class RtsService {
         let filledPreComQuantity = totalPreComTasks === 0 ? 0 : ((completedPreComTasks / totalPreComTasks) * 100).toFixed(2);
 
         return [
-            { nombre: 'com', filledQuantity: filledComQuantity },
-            { nombre: 'preCom', filledQuantity: filledPreComQuantity }
+            { id:1, nombre: 'com', filledQuantity: filledComQuantity },
+            { id:2, nombre: 'preCom', filledQuantity: filledPreComQuantity }
         ];
     }
 
