@@ -170,9 +170,9 @@ export class RtsService {
 
     //Falta agregar que no se pueda agregar un proy, sist, subsist, tag con mismo nombre
     
-    postProyecto = async (nombre) => {
-        let query = `INSERT INTO Proyecto (nombre) VALUES (?)`
-        const [result, fields] = await connection.execute(query, [nombre])
+    postProyecto = async (proyecto) => {
+        let query = `INSERT INTO Proyecto (nombre, nombreProyecto) VALUES (?, ?)`
+        const [result, fields] = await connection.execute(query, [proyecto.nombre, proyecto.nombreProyecto])
         return result
     }
 
