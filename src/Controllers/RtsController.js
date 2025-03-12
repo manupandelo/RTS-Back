@@ -69,7 +69,7 @@ router.get('/especialidad', /*Authenticate,*/ async (req, res) => {
 
 router.post('/proyecto', /*Authenticate,*/ async (req, res) => {
   console.log("Post Proyecto")
-  const rows = await rtsService.postProyecto(req.body.nombre);
+  const rows = await rtsService.postProyecto(req.body);
   return res.status(200).json(rows);
 });
 
