@@ -173,7 +173,7 @@ export class RtsService {
         const [result2, fields2] = await connection.execute(query2)
         
         let especialidades = result.map((especialidad) => {
-            const tareasEspecialidad = result2.filter((tarea) => tarea.idEspecialidad === especialidad.id);
+            const tareasEspecialidad = result2.filter((tarea) => tarea.idEspecialidad === especialidad.id && (tarea.done === 0 || tarea.done === 1));
             const totalTareas = tareasEspecialidad.length;
             const tareasCompletadas = tareasEspecialidad.filter((tarea) => tarea.done === 1).length;
             const filledQuantity = totalTareas === 0 ? 0 : ((tareasCompletadas / totalTareas) * 100).toFixed(2);
