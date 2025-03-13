@@ -378,7 +378,7 @@ export class RtsService {
     //GET pendientes
 
     getTareasPendientes = async () => {
-        let query = `SELECT Tarea.id, TareaXTipo.nombreTarea, TareaXTipo.codigo, Tipo.nombre as tipo, Tag.tag as tag FROM Tarea INNER JOIN TareaXTipo ON Tarea.idCodigo = TareaXTipo.id INNER JOIN Tipo ON TareaXTipo.idTipo = Tipo.id INNER JOIN Tag ON Tarea.idTag = Tag.id WHERE Tarea.done = 0`
+        let query = `SELECT Tarea.id, TareaXTipo.nombreTarea, TareaXTipo.codigo, Tipo.nombre as tipo, Tag.tag as tag, TagXTipo.com FROM Tarea INNER JOIN TareaXTipo ON Tarea.idCodigo = TareaXTipo.id INNER JOIN Tipo ON TareaXTipo.idTipo = Tipo.id INNER JOIN Tag ON Tarea.idTag = Tag.id WHERE Tarea.done = 0`
         const [result, fields] = await connection.execute(query)
         return result
     }
