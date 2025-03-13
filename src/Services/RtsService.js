@@ -86,7 +86,7 @@ export class RtsService {
         let queryTags = `SELECT Tag.id, Tag.tag, Tag.nombre, Tag.plano, Tipo.nombre as tipo, SubSistema.nombre as subsistema, Tag.idSubSistema FROM Tag INNER JOIN SubSistema ON Tag.idSubSistema = SubSistema.id INNER JOIN Tipo ON Tag.idTipo = Tipo.id`
         const [tags, fields] = await connection.execute(queryTags)
 
-        let queryTasks = `SELECT Tarea.id, Tarea.idTag, Tarea.done, TareaXTipo.nombreTarea as nombreTarea FROM Tarea INNER JOIN TareaXTipo ON Tarea.idCodigo = TareaXTipo.id`
+        let queryTasks = `SELECT Tarea.id, Tarea.idTag, Tarea.done, TareaXTipo.nombreTarea as nombreTarea, TareaXTipo.com as com FROM Tarea INNER JOIN TareaXTipo ON Tarea.idCodigo = TareaXTipo.id`
         const [tasks, fieldsTasks] = await connection.execute(queryTasks)
 
 
@@ -207,7 +207,7 @@ export class RtsService {
     }
 
     getTareasXTipo = async () => {
-        let query = `SELECT TareaXTipo.id, TareaXTipo.nombreTarea, TareaXTipo.codigo, Tipo.nombre as tipo FROM TareaXTipo INNER JOIN Tipo ON TareaXTipo.idTipo = Tipo.id`
+        let query = `SELECT TareaXTipo.id, TareaXTipo.nombreTarea, TareaXTipo.codigo, Tipo.nombre as tipo, TareaXTipo.com FROM TareaXTipo INNER JOIN Tipo ON TareaXTipo.idTipo = Tipo.id`
         const [result, fields] = await connection.execute(query)
         return result
     }
