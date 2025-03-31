@@ -13,7 +13,6 @@ router.get('', async (req, res) => {
 
 router.get('/proyecto', Authenticate, async (req, res) => {
   console.log("Get Proyectos")
-  console.log(req)
   const rows = await rtsService.getProyectos();
   return res.status(200).json(rows);
 });

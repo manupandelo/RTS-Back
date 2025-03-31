@@ -27,6 +27,9 @@ passport.use(strategy)
 
 // Middleware de autenticación
 export const Authenticate = (req, res, next) => {
+  console.log("Autenticando...")
+  console.log("Token:", req.headers.authorization)
+  console.log("Headers:", req.headers)
   passport.authenticate("jwt", { session: false }, (err, user, info) => {
     if (err) {
       console.error("Error en autenticación:", err)
