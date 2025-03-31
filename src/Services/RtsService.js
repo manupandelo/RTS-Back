@@ -314,7 +314,6 @@ export class RtsService {
         }
         if(bcrypt.compareSync(usuario.password, result[0].password)){
             result[0].token= await this.getToken(result[0]);
-            console.log(result)
             /*if(result[0].tipousuario == 1){
                 result[0].admin = true
             }else{

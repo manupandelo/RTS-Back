@@ -13,6 +13,7 @@ router.get('', async (req, res) => {
 
 router.get('/proyecto', Authenticate, async (req, res) => {
   console.log("Get Proyectos")
+  console.log(req)
   const rows = await rtsService.getProyectos();
   return res.status(200).json(rows);
 });
@@ -144,7 +145,6 @@ router.post('/registro', Authenticate, async (req, res) => {
 router.post('/login', async (req, res) => {
   console.log("Post Login")
   const rows = await rtsService.login(req.body);
-  console.log(rows.token)
   return res.status(200).json(rows);
 });
 
