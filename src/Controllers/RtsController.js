@@ -1,5 +1,5 @@
 import { Router } from 'express';
-import { /*Authenticate*/ } from '../Common/jwt.strategy.js';
+import { Authenticate } from '../Common/jwt.strategy.js';
 import { RtsService } from '../Services/RtsService.js';
 
 const router = Router();
@@ -11,80 +11,80 @@ router.get('', async (req, res) => {
 
 // GETS
 
-router.get('/proyecto', /*Authenticate,*/ async (req, res) => {
+router.get('/proyecto', Authenticate, async (req, res) => {
   console.log("Get Proyectos")
   const rows = await rtsService.getProyectos();
   return res.status(200).json(rows);
 });
 
-router.get('/sistema', /*Authenticate,*/ async (req, res) => {
+router.get('/sistema', Authenticate, async (req, res) => {
   console.log("Get Sistemas")
   const rows = await rtsService.getSistemas();
   return res.status(200).json(rows);
 });
 
-router.get('/subsistema', /*Authenticate,*/ async (req, res) => {
+router.get('/subsistema', Authenticate, async (req, res) => {
   console.log("Get Subsistemas")
   const rows = await rtsService.getSubSistemas();
   return res.status(200).json(rows);
 });
 
-router.get('/tag', /*Authenticate,*/ async (req, res) => {
+router.get('/tag', Authenticate, async (req, res) => {
   console.log("Get Tags")
   const rows = await rtsService.getTags();
   return res.status(200).json(rows);
 });
 
-router.get('/tarea', /*Authenticate,*/ async (req, res) => {
+router.get('/tarea', Authenticate, async (req, res) => {
   console.log("Get Tareas")
   const rows = await rtsService.getTareas();
   return res.status(200).json(rows);
 });
 
-router.get('/tareas', /*Authenticate,*/ async (req, res) => {
+router.get('/tareas', Authenticate, async (req, res) => {
   console.log("Get Tareas")
   const rows = await rtsService.getTareasXTipo();
   return res.status(200).json(rows);
 });
 
-router.get('/tareastag', /*Authenticate,*/ async (req, res) => {
+router.get('/tareastag', Authenticate, async (req, res) => {
   console.log("Get Tareas por Tag")
   const rows = await rtsService.getTareasTag();
   return res.status(200).json(rows);
 });
 
-router.get('/tipo', /*Authenticate,*/ async (req, res) => {
+router.get('/tipo', Authenticate, async (req, res) => {
   console.log("Get Tipos")
   const rows = await rtsService.getTipos();
   return res.status(200).json(rows);
 });
 
-router.get('/especialidad', /*Authenticate,*/ async (req, res) => {
+router.get('/especialidad', Authenticate, async (req, res) => {
   console.log("Get Especialidades")
   const rows = await rtsService.getEspecialidades();
   return res.status(200).json(rows);
 });
 
-router.get('/comm', /*Authenticate,*/ async (req, res) => {
+router.get('/comm', Authenticate, async (req, res) => {
   console.log("Get Comm")
   const rows = await rtsService.getComm();
   return res.status(200).json(rows);
 });
 
-router.get('/precomm', /*Authenticate,*/ async (req, res) => {
+router.get('/precomm', Authenticate, async (req, res) => {
   console.log("Get Comm")
   const rows = await rtsService.getPreComm();
   return res.status(200).json(rows);
 });
 // POSTS
 
-router.post('/proyecto', /*Authenticate,*/ async (req, res) => {
+router.post('/proyecto', Authenticate, async (req, res) => {
   console.log("Post Proyecto")
   const rows = await rtsService.postProyecto(req.body);
   return res.status(200).json(rows);
 });
 
-router.post('/sistema', /*Authenticate,*/ async (req, res) => {
+router.post('/sistema', Authenticate, async (req, res) => {
   console.log("Post Sistema")
   const rows = await rtsService.postSistema(req.body);
   if(rows == 0) {
@@ -93,7 +93,7 @@ router.post('/sistema', /*Authenticate,*/ async (req, res) => {
   return res.status(200).json(rows);
 });
 
-router.post('/subsistema', /*Authenticate,*/ async (req, res) => {
+router.post('/subsistema', Authenticate, async (req, res) => {
   console.log("Post Subsistema")
   const rows = await rtsService.postSubSistema(req.body);
   if(rows == 0) {
@@ -104,7 +104,7 @@ router.post('/subsistema', /*Authenticate,*/ async (req, res) => {
   return res.status(200).json(rows);
 });
 
-router.post('/tag', /*Authenticate,*/ async (req, res) => {
+router.post('/tag', Authenticate, async (req, res) => {
   console.log("Post Tag")
   console.log(req.body)
   const rows = await rtsService.postTag(req.body);
@@ -114,7 +114,7 @@ router.post('/tag', /*Authenticate,*/ async (req, res) => {
   return res.status(200).json("Tag agregado correctamente con sus respectivas tareas");
 });
 
-router.post('/tarea', /*Authenticate,*/ async (req, res) => {
+router.post('/tarea', Authenticate, async (req, res) => {
   console.log("Post Tarea")
   const rows = await rtsService.postTarea(req.body);
   return res.status(200).json(rows);
@@ -122,19 +122,19 @@ router.post('/tarea', /*Authenticate,*/ async (req, res) => {
 
 
 
-router.post('/tipo', /*Authenticate,*/ async (req, res) => {
+router.post('/tipo', Authenticate, async (req, res) => {
   console.log("Post Tipo")  
   const rows = await rtsService.postTipo(req.body);
   return res.status(200).json(rows);
 });
 
-router.post('/especialidad', /*Authenticate,*/ async (req, res) => {
+router.post('/especialidad', Authenticate, async (req, res) => {
   console.log("Post Especialidad")
   const rows = await rtsService.postEspecialidad(req.body.nombre);
   return res.status(200).json(rows);
 });
 
-router.post('/registro', /*Authenticate,*/ async (req, res) => {
+router.post('/registro', Authenticate, async (req, res) => {
   console.log(req.body)
   console.log("Post Registro Tareas")
   const rows = await rtsService.postRegistro(req.body);
@@ -161,19 +161,19 @@ router.post('/register', async (req, res) => {
 
 // PUTS
 
-router.put('/realizarTarea', /*Authenticate,*/ async (req, res) => {
+router.put('/realizarTarea', Authenticate, async (req, res) => {
   console.log("Realizar Tarea")
   const rows = await rtsService.realizarTarea(req.body.id);
   rows == 0 ? res.status(400).json("Error al realizar tarea") : res.status(200).json(rows);
 });
 
-router.put('/desmarcarTarea', /*Authenticate,*/ async (req, res) => {
+router.put('/desmarcarTarea', Authenticate, async (req, res) => {
   console.log("Desmarcar Tarea")
   const rows = await rtsService.desmarcarTarea(req.body.id);
   rows == 0 ? res.status(400).json("Error al desmarcar tarea") : res.status(200).json(rows);
 });
 
-router.put('/noaplica', /*Authenticate,*/ async (req, res) => {
+router.put('/noaplica', Authenticate, async (req, res) => {
   console.log("No Aplica")
   const rows = await rtsService.noAplica(req.body.id);
   rows == 0 ? res.status(400).json("Error al marcar tarea como no aplica") : res.status(200).json(rows);
@@ -181,49 +181,49 @@ router.put('/noaplica', /*Authenticate,*/ async (req, res) => {
 
 // PARA PASAR IDS CUANDO AGREGAMOS
 
-router.get('/idproyectos', /*Authenticate,*/ async (req, res) => {
+router.get('/idproyectos', Authenticate, async (req, res) => {
   console.log("Get Id Proyectos")
   const rows = await rtsService.getIdProyectos();
   return res.status(200).json(rows);
 });
 
-router.get('/idsistemas', /*Authenticate,*/ async (req, res) => {
+router.get('/idsistemas', Authenticate, async (req, res) => {
   console.log("Get Id Sistemas")
   const rows = await rtsService.getIdSistemas();
   return res.status(200).json(rows);
 });
 
-router.get('/idsubsistemas', /*Authenticate,*/ async (req, res) => {
+router.get('/idsubsistemas', Authenticate, async (req, res) => {
   console.log("Get Id Subsistemas")
   const rows = await rtsService.getIdSubsistemas();
   return res.status(200).json(rows);
 });
 
-router.get('/idtags', /*Authenticate,*/ async (req, res) => {
+router.get('/idtags', Authenticate, async (req, res) => {
   console.log("Get Id Tags")
   const rows = await rtsService.getIdTags();
   return res.status(200).json(rows);
 });
 
-router.get('/idtipo', /*Authenticate,*/ async (req, res) => {
+router.get('/idtipo', Authenticate, async (req, res) => {
   console.log("Get Id Tipos")
   const rows = await rtsService.getIdTipos();
   return res.status(200).json(rows);
 });
 
-router.get('/idespecialidad', /*Authenticate,*/ async (req, res) => {
+router.get('/idespecialidad', Authenticate, async (req, res) => {
   console.log("Get Id Especialidades")
   const rows = await rtsService.getIdEspecialidades();
   return res.status(200).json(rows);
 });
 
-router.get('/tareaspendientes', /*Authenticate,*/ async (req, res) => {
+router.get('/tareaspendientes', Authenticate, async (req, res) => {
   console.log("Get Tareas Pendientes")
   const rows = await rtsService.getTareasPendientes();
   return res.status(200).json(rows);
 });
 
-router.get('/tagspendientes', /*Authenticate,*/ async (req, res) => {
+router.get('/tagspendientes', Authenticate, async (req, res) => {
   console.log("Get Tags Pendientes")
   const rows = await rtsService.getTagsPendientes();
   return res.status(200).json(rows);

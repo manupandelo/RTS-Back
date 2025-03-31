@@ -344,7 +344,7 @@ export class RtsService {
             },
             process.env.AUTH_HS256_KEY, 
             {
-            issuer: "http://rts.com/",
+            issuer: process.env.AUTH_ISSUER_URL,
             subject: userId,
             audience: ["http://localhost/"],
             expiresIn: 60 * 24 * 24,

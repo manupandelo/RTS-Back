@@ -1,43 +1,45 @@
-import { ExtractJwt, Strategy } from "passport-jwt";
-import passport from "passport";
-import "dotenv/config";
+import { ExtractJwt, Strategy } from "passport-jwt"
+import passport from "passport"
+import "dotenv/config"
 
-const opt = {
-  jwtFromRequest: ExtractJwt.fromAuthHeaderAsBearerToken(),
+// Configuración de la estrategia JWT
+const jwtOptions = {
   secretOrKey: process.env.AUTH_HS256_KEY,
+  jwtFromRequest: ExtractJwt.fromAuthHeaderAsBearerToken(),
   issuer: process.env.AUTH_ISSUER_URL,
-  algorithms: ['HS256'],
-};
+  algorithms: ["HS256"],
+}
 
-// Registrar la estrategia JWT con Passport
-passport.use(
-  new Strategy(opt, (jwt_payload, done) => {
-    if (!jwt_payload) {
-      // Si no hay carga útil, no se permite la autenticación
-      return done(null, false); 
+// Crear la estrategia
+const strategy = new Strategy(jwtOptions, (payload, done) => {
+  try {
+    if (!payload) {
+      return done(null, false)
     }
-    // Si se encuentra la carga útil, se pasa como el usuario autenticado
-    return done(null, jwt_payload); 
-  })
-);
+    return done(null, payload)
+  } catch (error) {
+    return done(error, false)
+  }
+})
+
+// Inicializar passport con la estrategia
+passport.use(strategy)
 
 // Middleware de autenticación
 export const Authenticate = (req, res, next) => {
-  console.log('Authenticate');
-  console.log(req.headers);  // Para ver las cabeceras y el token recibido
-  
-  // Usar la estrategia 'jwt' registrada con Passport
-  passport.authenticate('jwt', { session: false }, (err, user) => {
+  passport.authenticate("jwt", { session: false }, (err, user, info) => {
     if (err) {
-      console.error(err);
-      return res.status(401).send({ message: 'Unauthorized' });
+      console.error("Error en autenticación:", err)
+      return res.status(500).json({ message: "Error interno del servidor" })
     }
+
     if (!user) {
-      return res.status(401).send({ message: 'Unauthorized' });
+      console.log("Token inválido o no proporcionado:", info?.message)
+      return res.status(401).json({ message: "No autorizado" })
     }
-    
-    // El usuario está autenticado, continuar con la siguiente función
-    req.user = user;  // Puedes almacenar el usuario en `req.user`
-    next();
-  })(req, res, next);
-};
+
+    // Guardar el usuario en el request para uso posterior
+    req.user = user
+    next()
+  })(req, res, next)
+}
